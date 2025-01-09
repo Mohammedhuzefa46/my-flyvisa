@@ -132,3 +132,9 @@ def dashboard():
 
 if _name_ == '_main_':
     app.run(debug=True)
+    # Add this at the end of your script
+if __name__ == '__main__':
+    with app.app_context():
+        print(url_for('contact'))  # Should print /contact
+        print(url_for('subscribe'))  # Should print /subscribe
+    app.run(debug=True)
