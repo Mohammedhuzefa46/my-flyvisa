@@ -8,7 +8,7 @@ from email_validator import validate_email, EmailNotValidError  # Importing the 
 # Load environment variables (ensure you have a .env file with the required details)
 load_dotenv()
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Configure the app with database settings
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///emails.db'  # SQLite for simplicity
@@ -32,9 +32,8 @@ class Email(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email_address = db.Column(db.String(120), nullable=False)  # Remove unique=True here
 
-    def _repr_(self):
+    def __repr__(self):
         return f'<Email {self.email_address}>'
-
 
 # Create the database (if it doesn't exist)
 with app.app_context():
@@ -43,7 +42,14 @@ with app.app_context():
 # Route for the homepage
 @app.route('/')
 def index():
-    return render_template('index.html')  # Main page with forms
+    # Generate and print the URLs for 'contact' and 'subscribe'
+    contact_url = url_for('contact')  # /contact
+    subscribe_url = url_for('subscribe')  # /subscribe
+    print(f"Contact URL: {contact_url}")
+    print(f"Subscribe URL: {subscribe_url}")
+
+    # Pass the URLs to the template if needed
+    return render_template('index.html', contact_url=contact_url, subscribe_url=subscribe_url)
 
 # Route for the contact form submission
 @app.route('/contact', methods=['POST'])
@@ -130,11 +136,5 @@ def dashboard():
     emails = Email.query.all()
     return render_template('dashboard.html', emails=emails)  # Display the emails on the dashboard
 
-if _name_ == '_main_':
-    app.run(debug=True)
-    # Add this at the end of your script
 if __name__ == '__main__':
-    with app.app_context():
-        print(url_for('contact'))  # Should print /contact
-        print(url_for('subscribe'))  # Should print /subscribe
     app.run(debug=True)
